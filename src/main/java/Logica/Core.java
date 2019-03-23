@@ -76,6 +76,44 @@ public class Core implements Serializable{
             System.out.println("no se pudo agregar Reporte");
         }
     }
+    public void eliminarReporte(int idCliente){
+        int cantidad=0;
+        try{
+            if(personas.containsKey(idCliente)){
+                if(personas.get(idCliente).getReportes().isEmpty()){
+                    System.out.println("El cliente no tiene reportes en el Sistema");
+                }else{
+                    for (Reporte rep : personas.get(idCliente).getReportes().values()) {
+                        
+                        if(rep.getEstado().equals("-")){
+                            cantidad =cantidad+1;
+                            System.out.println("Reporte Negativo con codigo "+rep.getCodigo()+".");
+                        }
+                    }
+                    if(cantidad==0){
+                        System.out.println("No hay mas Reportes negativos para el usuario "+
+                                personas.get(idCliente).getNombre());
+                    }else{
+                        System.out.println("Digite el codigo del reporte que desea eliminar:");
+                        int codigo=Integer.parseInt(entrada.readLine());
+                        if(personas.get(idCliente).getReportes().containsKey(codigo)
+                                && personas.get(idCliente).getReportes().get(codigo).getEstado().equals("-")){
+                            cantidad =cantidad-1;
+                            personas.get(idCliente).getReportes().remove(codigo);
+                            eliminarReporte(idCliente);
+                            
+                        }else{
+                            System.out.println("El reporte no existe o es positivo.");
+                        }
+                    }
+                }
+            }else{
+                System.out.println("El cliente no está registrado en el Sistema.");
+            }
+        }catch(Exception e){
+            
+        }
+    }
     public void imprimirReportes(Integer identificacion){
         if(personas.containsKey(identificacion)){
             for (Map.Entry<Integer, Reporte> entry : personas.get(identificacion).getReportes().entrySet()) {
@@ -100,7 +138,8 @@ public class Core implements Serializable{
                            "1.Agregar Personas\n"+
                            "2.agregar Reportes a personas\n"+
                            "3.Ver Reportes por cedula\n"+
-                           "4.Guardar y salir");
+                           "4.Guardar y salir\n"+ 
+                           "5. eliminar reporte\n");
         int opcion=0;
         try {
            opcion=Integer.parseInt((entrada.readLine()));; 
@@ -195,6 +234,13 @@ public class Core implements Serializable{
             case 4:
                 
                 guardarArchivo();
+                break;
+            case 5:
+                    Integer idCliente=0;
+                    System.out.println("Identificación del Ciente: ");
+                    idCliente=Integer.parseInt(entrada.readLine());
+                    eliminarReporte(idCliente);
+                    menu();
                 break;
             
         }
